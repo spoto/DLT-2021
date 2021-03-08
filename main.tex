@@ -45,24 +45,25 @@ Fabio Tagliaferro\inst{1}
 \begin{abstract}
 
   The modern blockchain technologies exploit smart contracts to handle and to express the rules of an agreement among parties.
-  A smart contract is typically written in a high-level programming languages and once deployed/installed into the blockchain 
+  A smart contract is typically written in a high-level programming language and once deployed/installed into the blockchain 
   it becomes immutable and can be executed. This immutability feature, achieved through a cryptogra\-phically-linked chain of blocks and a consensus algorithm, 
   allows to guarantee contract integrity and to avoid tampering by third parties. A bug in smart contract code has dangerous consequences, such as rule violations 
   and security attacks. Indeed, an immutable contract can lead to immutable bugs and they cannot be easily patched.
   For this reason verification techniques must be applied to ensure the correctness of smart contract code. Typically, a developer should check the code with 
-  verification tools on her machine or exploiting third-party services \cite{TIGR21, GriecoSCFG20, FeistGG19}, i.e. outside of the blockchain (\emph{off-chain}), before to perform a transaction to 
+  verification tools (ex. \cite{TIGR21, GriecoSCFG20, FeistGG19}) on her machine or exploiting third-party services, i.e. outside of the blockchain (\emph{off-chain}), before to perform a transaction to 
   install the smart contract into the blockchain. However, there are no guarantees that this will happen because this approach is \emph{optional} and a naive 
-  % programming without verification could still occur, because standard blockchains cannot forced to use it. An automatic \emph{on-chain} verification 
+   programming without verification could still occur and standard blockchains cannot forced to use it. An automatic \emph{on-chain} verification 
   instead, that occurs inside the same blockchain nodes (that are consequently part of the consensus rules of the blockchain) can act as a \emph{mandatory} entry filter at installation time
   that bans code that does not abide to the verification rules. The development of an on-chain solution is 
   challenging task because it must be efficient, in order to not overly burden performance on the nodes of the network. In addition, it needs to specific technique 
   for updating the consensus rules of a network, after a change in the verification rules. We have implemented an on-chain verification for smart contracts written 
-  in the Takamaka subset of Java~\cite{Spoto19}, running as a decentralized application in a Proof-of-Stake (PoS) blockchain exploiting Tendermint Core. Our verification module
-  includes $26$ on-chain checks, that mostly verify the correct use of Takamaka's primitives and code annotations and the use of a deterministic subset of Java~\cite{Spoto20}.
-  The verification module can be upgraded only with the network consensus with a poll provided by stakeholders through a smart contract. 
+  in the Takamaka subset of Java~\cite{Spoto19}, running as a decentralized application in a Proof-of-Stake (PoS) blockchain, exploiting Tendermint Core~\cite{abci}. 
+  Our verification module includes $26$ on-chain checks, that mostly verify the correct use of Takamaka's primitives and code annotations and the use of a 
+  deterministic subset of Java~\cite{Spoto20}.
+  The verification module can be upgraded only with the network consensus with a poll for the new verification tool version, provided by stakeholders through a smart contract. 
   Conceptually, this means that an update of the verification module triggers a re-verification of all code previously successfully installed in blockchain. 
   In practice, this cannot be performed, since it would be extremely expensive and would hang the nodes for a long time. For this reason, our solution is to lazily 
-  re-verify the code only on-demand, when it is asked to run (\cite{OlivaHJ20}~shows in popular public blockchain like Ethereum~\cite{Buterin13} that
+  re-verify the code only on-demand, when it is asked to run (\cite{OlivaHJ20}~shows that,in popular public blockchain like Ethereum~\cite{Buterin13},
   only $0.05\%$ of all contracts installed are involved in $80\%$ of the transactions). A lazy approach allows to amortize the cost of re-verification 
   avoiding the re-verification of code that might actually never run again.
   In order to evaluate the scalability of our technique, we have created a smart contract
