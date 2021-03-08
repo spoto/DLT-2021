@@ -43,41 +43,37 @@ Fabio Tagliaferro\inst{1}
 \maketitle
 
 \begin{abstract}
-
-  The modern blockchain technologies exploit smart contracts to handle and to express the rules of an agreement among parties.
-  A smart contract is typically written in a high-level programming language and once deployed/installed into the blockchain 
-  it becomes immutable and can be executed. This immutability feature, achieved through a cryptogra\-phically-linked chain of blocks and a consensus algorithm, 
-  allows to guarantee contract integrity and to avoid tampering by third parties. A bug in smart contract code has dangerous consequences, such as rule violations 
-  and security attacks. Indeed, an immutable contract can lead to immutable bugs and they cannot be easily patched.
-  For this reason verification techniques must be applied to ensure the correctness of smart contract code. Typically, a developer should check the code with 
-  verification tools (ex. \cite{TIGR21, GriecoSCFG20, FeistGG19}) on her machine or exploiting third-party services, i.e. outside of the blockchain (\emph{off-chain}), before to perform a transaction to 
-  install the smart contract into the blockchain. However, there are no guarantees that this will happen because this approach is \emph{optional} and a naive 
-   programming without verification could still occur and standard blockchains cannot forced to use it. An automatic \emph{on-chain} verification 
-  instead, that occurs inside the same blockchain nodes (that are consequently part of the consensus rules of the blockchain) can act as a \emph{mandatory} entry filter at installation time
-  that bans code that does not abide to the verification rules. The development of an on-chain solution is 
-  challenging task because it must be efficient, in order to not overly burden performance on the nodes of the network. In addition, it needs to specific technique 
-  for updating the consensus rules of a network, after a change in the verification rules. We have implemented an on-chain verification for smart contracts written 
-  in the Takamaka subset of Java~\cite{Spoto19}, running as a decentralized application in a Proof-of-Stake (PoS) blockchain, exploiting Tendermint Core~\cite{tendermintcore}. 
-  Our verification module includes $26$ on-chain checks, that mostly verify the correct use of Takamaka's primitives and code annotations and the use of a 
-  deterministic subset of Java~\cite{Spoto20}.
-  The verification module can be upgraded only with the network consensus with a poll for the new verification tool version, provided by stakeholders through a smart contract. 
-  Conceptually, this means that an update of the verification module triggers a re-verification of all code previously successfully installed in blockchain. 
-  In practice, this cannot be performed, since it would be extremely expensive and would hang the nodes for a long time. For this reason, our solution is to lazily 
-  re-verify the code only on-demand, when it is asked to run (\cite{OlivaHJ20}~shows that,in popular public blockchain like Ethereum~\cite{Buterin13},
-  only $0.05\%$ of all contracts installed are involved in $80\%$ of the transactions). A lazy approach allows to amortize the cost of re-verification 
-  avoiding the re-verification of code that might actually never run again.
-  In order to evaluate the scalability of our technique, we have created a smart contract
-  that creates and funds a pool of $500$ externally-owned
-  accounts and allows one to determine which is the \emph{richest} among them (has highest balance).
-  We have written a JUnit test that installs that smart contract in blockchain and
-  uses it to create and fund the $500$ accounts, execute $1,000$
-  random money transfers between them and ask for the richest. This process is repeated
-  ten times. The execution time of this test
-  is $158.19$ seconds on our machine (Intel Core i3-4150, 16GB of RAM, running Ubuntu Linux 20.04.1).
-  In total (including code installation and account creation) the test runs $10,020$ transactions,
-  that is, it performs $63.34$ transactions per second.
-  By turning on-chain verification off, the same test runs in $156.95$ seconds, that is,
-  it performs $63.84$ transactions per second.
+  Blockchain protocols allow the programming of smart contracts: computer code handling and expressing agreements among parties.
+  The distributed execution of contracts is enforced by a consensus protocol, as a consequence of transactions signed and broadcasted by the users of a blockchain network.
+  Smart contracts are typically written in a high-level programming language and once deployed/installed in blockchain they become practically immutable.
+  This immutability feature, achieved through a cryptogra\-phically-linked chain of blocks and a consensus algorithm, guarantees code integrity and avoids tampering by third parties.
+  Bugs in smart contract code have dangerous consequences (such as rule violations and security attacks) causing economic losses.
+  Indeed, immutable contracts can lead to immutable bugs that cannot be easily patched.
+  For this reason the correctness of smart contract code must be ensured, for example with verification techniques.
+  Typically, developers should check the code with verification tools (\emph{e.g.}, \cite{TIGR21, GriecoSCFG20, FeistGG19}) on their machine or by leveraging third-party services (\emph{i.e.}, outside of blockchain and hence \emph{off-chain}), before smart contract installation.
+  However, this approach is \emph{optional}: naive programming without verification could still occur and none of the existing blockchain protocols force its use at all.
+  Instead, an automatic \emph{on-chain} verification occurs among the nodes of a blockchain network, as part of its consensus rules.
+  On-chain smart contract verification acts as a \emph{mandatory} filter that blocks the installation of code that does not abide to the verification rules, effectively making their execution impossible.
+  The verification module should be efficient (the network should not be burden by the distibuted verification) and deterministic (every node should have the same result to achieve result).
+  These requirements make the development of an on-chain solution a challenging task.
+  In addition, it needs a specific technique for updating the consensus rules of a network after a change of the verification rules.
+  The re-verification of previously installed smart contracts (with the latest verification checks) must be enforced too, assuring that every smart contract has been verified with the latest checks before being executed.
+  We implemented a on-chain smart contract verification solution for the Takamaka subset of Java~\cite{Spoto19} as a decentralized application in a Proof-of-Stake (PoS) blockchain exploiting Tendermint Core~\cite{tendermintcore}.
+  Our verification module includes $26$ on-chain checks verifying the correct use of Takamaka's primitives and code annotations while only allowing the use of a
+  deterministic subset of the Java library~\cite{Spoto20}.
+  In our implementation, the verification module can be upgraded only with network consensus, as a result of a successful poll proposed and voted by stakeholders through a Takamaka smart contract.
+  Conceptually, an update of the verification module requires the re-verification of all code already installed in blockchain.
+  This procedure could be really expensive since it would hang the nodes for a long time.
+  However, the experience on the popular and public blockchain Ethereum~\cite{Buterin13} is that only $0.05\%$ of all contracts installed are involved in $80\%$ of the transactions~\cite{OlivaHJ20}, suggesting that a complete re-verification of the installed smart contracts could be a waste of time.
+  For this reason, our solution is to lazily re-verify the code only on-demand, when it is asked to run.
+  A lazy approach amortizes the costs of an update to the verification module by avoiding the re-verification of code that might actually never run again.
+  Finally, once that a smart contract has been blocked by re-verification it won't be possible to restore it.
+  We evaluated the scalability of our technique with a smart contract that creates and funds a pool of $500$ externally-owned accounts and allows one to determine which is the \emph{richest} among them (has highest balance).
+  We have written a JUnit test that installs that smart contract in blockchain and uses it to create and fund the $500$ accounts, execute $1,000$ random money transfers between them and asks for the richest.
+  This experiment is repeated ten times.
+  The execution time of this test is $158.19$ seconds on our machine (Intel Core i3-4150, 16GB of RAM, running Ubuntu Linux 20.04.1).
+  In total (including code installation and account creation) the test runs $10,020$ transactions, that is, it performs $63.34$ transactions per second.
+  By turning on-chain verification off, the same test runs in $156.95$ seconds, that is, it performs $63.84$ transactions per second.
   These numbers have been computed as an average over five executions of the test.
   This shows that on-chain verification increases the execution time of the test by only $0.79\%$.
 \end{abstract}
@@ -86,4 +82,3 @@ Fabio Tagliaferro\inst{1}
 \bibliography{biblio}
 
 \end{document}
-
