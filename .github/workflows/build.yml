@@ -20,21 +20,20 @@ jobs:
       - name: Compile abstract
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: main.tex
+          root_file: DLT20201-abstract.tex
       - name: Compile slides
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: DLT2021.tex
-          working_directory: talk/
+          root_file: DLT2021-slides.tex
       - name: Check pdf files
         run: |
-          file main.pdf | grep -q ' PDF '
-          file talk/DLT2021.pdf | grep -q ' PDF '
+          file DLT2021-abstract.pdf | grep -q ' PDF '
+          file DLT2021-slides.pdf | grep -q ' PDF '
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: DLT2021
           path: |
-            main.pdf
-            talk/slides.pdf
+            DLT2021-abstract.pdf
+            DLT2021-slides.pdf
         if: always()
