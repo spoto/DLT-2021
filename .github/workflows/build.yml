@@ -20,7 +20,7 @@ jobs:
       - name: Compile abstract
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: DLT20201-abstract.tex
+          root_file: DLT2021-abstract.tex
       - name: Compile slides
         uses: xu-cheng/latex-action@v2
         with:
